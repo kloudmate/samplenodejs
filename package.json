@@ -26,16 +26,27 @@
 		"@types/node": "^17.0.14",
 		"@types/node-fetch": "^3.0.3",
 		"nodemon": "^2.0.15",
+		"ts-node": "^10.9.2",
 		"tsc-watch": "^4.6.0",
-		"typescript": "^4.5.5"
+		"typescript": "^4.9.5"
 	},
 	"scripts": {
 		"build": "tsc --build",
-		"start": "tsc-watch   --onSuccess \"nodemon     dist/app.js \"",
+		"start": "tsc-watch   --onSuccess \"nodemon  --require ./dist/instrumentation.js  dist/app.js \"",
 		"debug": "tsc-watch --onSuccess \"nodemon  --inspect=9230   --ignore dist/ dist/app.js\"",
 		"debug-brk": "tsc-watch --onSuccess \"nodemon  --inspect-brk    dist/app.js\""
 	},
 	"dependencies": {
+		"@opentelemetry/api": "^1.7.0",
+		"@opentelemetry/auto-instrumentations-node": "^0.40.2",
+		"@opentelemetry/exporter-logs-otlp-http": "^0.45.1",
+		"@opentelemetry/exporter-metrics-otlp-http": "^0.45.1",
+		"@opentelemetry/exporter-trace-otlp-http": "^0.45.1",
+		"@opentelemetry/resources": "^1.18.1",
+		"@opentelemetry/sdk-logs": "^0.45.1",
+		"@opentelemetry/sdk-metrics": "^1.18.1",
+		"@opentelemetry/sdk-node": "^0.45.1",
+		"@opentelemetry/semantic-conventions": "^1.18.1",
 		"async": "^3.2.5",
 		"async-redis": "^2.0.0",
 		"axios": "^1.6.2",

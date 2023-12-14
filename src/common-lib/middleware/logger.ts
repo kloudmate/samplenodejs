@@ -33,13 +33,35 @@ loggerProvider.addLogRecordProcessor(logProcessor)
 
 
 const { combine, label, printf } = format
-const myFormat = printf(info => `${info.timestamp} [${info.level}]: ${info.label} - ${info.message}`)
+
+const myFormat = printf(info => {
+
+	const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${info.message}`
+
+	if (info.level === 'info') {
+		loggerProvider
+			.getLogger('otel-logger')
+			.emit({ body: formatedMessage, severityNumber: SeverityNumber.INFO })
+	}
+	else if (info.level === 'error') {
+		loggerProvider
+			.getLogger('otel-logger')
+			.emit({ body: formatedMessage, severityNumber: SeverityNumber.ERROR })
+	}
+	else {
+		loggerProvider
+			.getLogger('otel-logger')
+			.emit({ body: formatedMessage, severityNumber: SeverityNumber.WARN })
+	}
+
+	return formatedMessage;
+})
+
 const appendTimestamp = format((info, opts) => {
 	if (opts.tz) info.timestamp = moment().tz(opts.tz).format()
 	return info
 })
-const formatLog = (args: any) =>
-	typeof args === 'string' ? args : JSON.stringify(args)
+
 const customLogger = module => {
 	const logger = createLogger({
 		//TODO: Need to read the level from config
@@ -56,30 +78,7 @@ const customLogger = module => {
 		},
 	}
 
-
-
 	return logger
-}
-
-customLogger.info = (args: any) => {
-	loggerProvider
-		.getLogger('otel-logger')
-		.emit({ body: formatLog(args), severityNumber: SeverityNumber.INFO })
-	return customLogger.info(args)
-}
-
-customLogger.warning = (args: any) => {
-	loggerProvider
-		.getLogger('otel-logger')
-		.emit({ body: formatLog(args), severityNumber: SeverityNumber.WARN })
-	return customLogger.warning(args)
-}
-
-customLogger.error = (args: any) => {
-	loggerProvider
-		.getLogger('otel-logger')
-		.emit({ body: formatLog(args), severityNumber: SeverityNumber.ERROR })
-	return customLogger.error(args)
 }
 
 // create a stream object with a 'write' function that will be used by `morgan`

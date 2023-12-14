@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  mainapp:
+    build: ./
+    container_name: mainapp
+    ports:
+      - "3000:3000"
+    networks:
+      - nodeapp-network
+    environment:
+      REDISURL: redis
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - nodeapp-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - nodeapp-network
+
+networks:
+  nodeapp-network:
+    driver: bridge

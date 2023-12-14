@@ -1,6 +1,6 @@
 import mainapp from '../../app'
 import customLogger from '../middleware/logger'
-const app = mainapp.container || mainapp
+const app = mainapp
 const path = require('path')
 let logger = customLogger(path.basename(__filename))
 const request = require('request')

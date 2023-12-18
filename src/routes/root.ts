@@ -4,28 +4,13 @@ import authentication from '../common-lib/helpers/authentication'
 import { addToCache, checkCache } from '../common-lib/helpers/cache'
 import customLogger from '../common-lib/middleware/logger'
 import config from '../config'
+import { countRequestsMiddleware } from '../common-lib/middleware/requestCounter'
+
 const logger = customLogger(path.basename(__filename))
-module.exports = app => {
+module.exports = async (app) => {
 	//:TODO need to secure these apis too.
 	const cache = app.get('redisCache')
-	const db = app.get('db')
-	const { sequelize, Sequelize } = db
-
-	// Todo table
-	const Todo = sequelize.define('Todo', {
-		title: {
-			type: Sequelize.STRING,
-		},
-		description: {
-			type: Sequelize.TEXT,
-		},
-	});
-
-	Todo.sync().then(() => {
-		logger.info("Todo Model synced");
-	}).catch((err) => {
-		logger.error(`Error in Todo: ${err}`)
-	});
+	const Todo = await require('../models/todo')(app)
 
 	app.use(function (req, res, next) {
 		req.realmName = req.headers.realmname
@@ -41,6 +26,7 @@ module.exports = app => {
 		// }
 	})
 	app.use(checkCache)
+	app.use(countRequestsMiddleware)
 
 	app.get('/', (req, res, next) => {
 		try {
@@ -59,7 +45,10 @@ module.exports = app => {
 				title,
 				description,
 			});
-
+			const { id } = todo;
+			const key = `todos_${id}`
+			cache.set(key, JSON.stringify(todo), 60);
+			logger.info(`New record cached : ${key}`)
 			res.json(todo);
 		} catch (error) {
 			console.error(error);

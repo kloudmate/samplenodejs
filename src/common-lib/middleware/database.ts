@@ -3,6 +3,7 @@ import decamelize from 'decamelize'
 import Sequelize from 'sequelize'
 import config from '../../config'
 import customLogger from './logger'
+import modelLoader from './modelLoader'
 const cls = require('continuation-local-storage')
 //import config from '../config';
 const path = require('path')
@@ -58,6 +59,7 @@ const init = (app, cb) => {
 		db.Sequelize = Sequelize
 		logger.info(`Sequelize initialized for database "${config.database.name}" at host "${config.database.host}" successfully.`)
 		app.set('db', db)
+		modelLoader(app);
 		cb && cb()
 		return db
 	}

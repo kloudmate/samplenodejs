@@ -4,13 +4,13 @@ receivers:
       http:
   redis:
     endpoint: "redis:6379"
-    collection_interval: 60s
+    collection_interval: 30s
   postgresql:
     endpoint: "postgres:5432"
-    collection_interval: 60s
-    username: postgres
-    password: postgres
-    databases: postgres
+    collection_interval: 30s
+    username: ${username}
+    password: ${password}
+    databases: ${databses}
     tls:
       insecure: true
 
@@ -19,11 +19,6 @@ exporters:
     endpoint: https://otel.kloudmate.com:4318
     headers:
       Authorization: sk_qTNwGwVF67KAq2ZDm0DblSIe
-  logging:
-    verbosity: detailed
-    sampling_initial: 5
-    sampling_thereafter: 200
-  
 
 processors:
   batch:

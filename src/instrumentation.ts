@@ -3,7 +3,17 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { Resource } from '@opentelemetry/resources'
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
+import {
+    LoggerProvider,
+    BatchLogRecordProcessor,
+} from '@opentelemetry/sdk-logs'
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
+import {
+    PeriodicExportingMetricReader, MeterProvider
+} from '@opentelemetry/sdk-metrics';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 
+// resource
 const resource = Resource.default().merge(
     new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'my-app',
@@ -11,6 +21,37 @@ const resource = Resource.default().merge(
     })
 )
 
+// log
+const loggerProvider = new LoggerProvider({
+    resource: resource,
+})
+const logExporter = new OTLPLogExporter({
+    url: `https://otel.kloudmate.com:4318/v1/logs`,
+    headers: {
+        Authorization: 'sk_qTNwGwVF67KAq2ZDm0DblSIe',
+    },
+})
+const logProcessor = new BatchLogRecordProcessor(logExporter)
+loggerProvider.addLogRecordProcessor(logProcessor)
+
+
+// metric
+const metricExporter = new OTLPMetricExporter({
+    url: `https://otel.kloudmate.com:4318/v1/metrics`,
+    headers: {
+        Authorization: 'sk_qTNwGwVF67KAq2ZDm0DblSIe',
+    },
+})
+
+const meterProvider = new MeterProvider({ resource: resource });
+
+meterProvider.addMetricReader(new PeriodicExportingMetricReader({
+    exporter: metricExporter,
+}))
+
+const meter = meterProvider.getMeter('meter-info');
+
+// traces
 const sdk = new NodeSDK({
     resource: resource,
     traceExporter: new OTLPTraceExporter({
@@ -30,3 +71,5 @@ process.on('SIGTERM', () => {
         .catch((error) => console.log('Error terminating tracing', error))
         .finally(() => process.exit(0));
 });
+
+export { loggerProvider, meter }

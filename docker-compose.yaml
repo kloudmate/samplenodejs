@@ -10,6 +10,8 @@ services:
       REDISURL: redis
       DATABASE_HOST: postgres
       DATABASE_SSL: false
+    networks:
+      - nodeapp-network
     depends_on:
       - postgres
       - redis
@@ -18,11 +20,13 @@ services:
     image: postgres:alpine
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "0.0.0.0:5432:5432"
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    networks:
+      - nodeapp-network
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -30,4 +34,28 @@ services:
     image: redis:alpine
     container_name: redis
     ports:
-      - "6379:6379"
+      - "0.0.0.0:6379:6379"
+    networks:
+      - nodeapp-network
+
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:rw
+    ports:
+      - 0.0.0.0:1888:1888 # pprof extension
+      - 0.0.0.0:13133:13133 # health_check extension
+      - 0.0.0.0:4318:4318 # OTLP http receiver
+      - 0.0.0.0:55679:55679 # zpages extension
+    networks:
+      - nodeapp-network
+    depends_on:
+      - redis
+      - postgres
+
+networks:
+  nodeapp-network:
+
+

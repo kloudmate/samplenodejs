@@ -2,35 +2,9 @@
 import config from '../../config'
 const winston = require('winston')
 const { createLogger, format, transports } = winston
-import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
-import {
-	LoggerProvider,
-	BatchLogRecordProcessor,
-} from '@opentelemetry/sdk-logs'
-import { Resource } from '@opentelemetry/resources'
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { SeverityNumber } from '@opentelemetry/api-logs'
+import { loggerProvider } from '../../instrumentation'
 const moment = require('moment-timezone')
-
-const resource = Resource.default().merge(
-	new Resource({
-		[SemanticResourceAttributes.SERVICE_NAME]: 'my-app',
-		[SemanticResourceAttributes.SERVICE_VERSION]: '0.1.0',
-	})
-)
-
-const loggerProvider = new LoggerProvider({
-	resource: resource,
-})
-const logExporter = new OTLPLogExporter({
-	url: `https://otel.kloudmate.com:4318/v1/logs`,
-	headers: {
-		Authorization: 'sk_qTNwGwVF67KAq2ZDm0DblSIe',
-	},
-})
-const logProcessor = new BatchLogRecordProcessor(logExporter)
-loggerProvider.addLogRecordProcessor(logProcessor)
-
 
 const { combine, label, printf } = format
 

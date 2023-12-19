@@ -29,6 +29,7 @@ yarn-error.log*
 .env.yml*
 .envdev
 .env*
+!.env.example
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # IDE generated directories
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

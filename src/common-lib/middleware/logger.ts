@@ -9,8 +9,8 @@ const moment = require('moment-timezone')
 const { combine, label, printf } = format
 
 const myFormat = printf(info => {
-
-	const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${info.message}`
+	const message: string = typeof info.message === 'string' ? info.message : JSON.stringify(info.message);
+	const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${message}`
 
 	if (info.level === 'info') {
 		loggerProvider
@@ -27,7 +27,6 @@ const myFormat = printf(info => {
 			.getLogger('otel-logger')
 			.emit({ body: formatedMessage, severityNumber: SeverityNumber.WARN })
 	}
-
 	return formatedMessage;
 })
 

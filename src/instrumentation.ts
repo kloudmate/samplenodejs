@@ -26,10 +26,7 @@ const loggerProvider = new LoggerProvider({
     resource: resource,
 })
 const logExporter = new OTLPLogExporter({
-    url: `https://otel.kloudmate.com:4318/v1/logs`,
-    headers: {
-        Authorization: 'sk_qTNwGwVF67KAq2ZDm0DblSIe',
-    },
+    url: `http://otel-collector:4318/v1/logs`,
 })
 const logProcessor = new BatchLogRecordProcessor(logExporter)
 loggerProvider.addLogRecordProcessor(logProcessor)
@@ -37,10 +34,7 @@ loggerProvider.addLogRecordProcessor(logProcessor)
 
 // metric
 const metricExporter = new OTLPMetricExporter({
-    url: `https://otel.kloudmate.com:4318/v1/metrics`,
-    headers: {
-        Authorization: 'sk_qTNwGwVF67KAq2ZDm0DblSIe',
-    },
+    url: `http://otel-collector:4318/v1/metrics`,
 })
 
 const meterProvider = new MeterProvider({ resource: resource });
@@ -55,10 +49,7 @@ const meter = meterProvider.getMeter('meter-info');
 const sdk = new NodeSDK({
     resource: resource,
     traceExporter: new OTLPTraceExporter({
-        url: `https://otel.kloudmate.com:4318/v1/traces`,
-        headers: {
-            Authorization: 'sk_qTNwGwVF67KAq2ZDm0DblSIe',
-        },
+        url: `http://otel-collector:4318/v1/traces`,
     }),
     instrumentations: [getNodeAutoInstrumentations()],
 });

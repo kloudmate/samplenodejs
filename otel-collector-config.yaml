@@ -31,15 +31,15 @@ processors:
 service:
   # extensions: [pprof, zpages, health_check]
   pipelines:
-    # traces:
-    #   receivers: [redis, postgresql]
-    #   processors: [batch]
-    #   exporters: [otlphttp, logging]
-    metrics:
-      receivers: [redis, postgresql]
+    traces:
+      receivers: [otlp]
       processors: [batch]
       exporters: [otlphttp]
-    # logs:
-    #   receivers: [redis]
-    #   processors: [batch]
-    #   exporters: [otlphttp, logging]
+    metrics:
+      receivers: [otlp, redis, postgresql]
+      processors: [batch]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]

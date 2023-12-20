@@ -45,6 +45,7 @@ module.exports = async (app) => {
 				title,
 				description,
 			});
+			logger.info({ msg: 'todo created', todo })
 			const { id } = todo;
 			const key = `todos_${id}`
 			cache.set(key, JSON.stringify(todo), 60);

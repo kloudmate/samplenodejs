@@ -9,8 +9,9 @@ const moment = require('moment-timezone')
 const { combine, label, printf } = format
 
 const myFormat = printf(info => {
-
-	const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${info.message}`
+	const message: string = typeof info.message === 'string' ? info.message : JSON.stringify(info.message);
+	// const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${message}`
+	const formatedMessage: string = message;
 
 	if (info.level === 'info') {
 		loggerProvider
@@ -27,21 +28,25 @@ const myFormat = printf(info => {
 			.getLogger('otel-logger')
 			.emit({ body: formatedMessage, severityNumber: SeverityNumber.WARN })
 	}
-
 	return formatedMessage;
 })
 
-const appendTimestamp = format((info, opts) => {
-	if (opts.tz) info.timestamp = moment().tz(opts.tz).format()
-	return info
-})
+// appends timestamp
+// const appendTimestamp = format((info, opts) => {
+// 	if (opts.tz) info.timestamp = moment().tz(opts.tz).format()
+// 	return info
+// })
 
 const customLogger = module => {
 	const logger = createLogger({
 		//TODO: Need to read the level from config
 		level: config.logger.level || 'info',
 		// colorize: true,
-		format: combine(label({ label: module }), appendTimestamp({ tz: 'Asia/Kolkata' }), myFormat),
+
+		// Commented out formatting line to resolve Kloudmate issue: Parsing the message object as a string.
+
+		// format: combine(label({ label: module }), appendTimestamp({ tz: 'Asia/Kolkata' }), myFormat),
+		format: myFormat,
 		transports: [new transports.Console()],
 	})
 	logger.stream = {

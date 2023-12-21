@@ -12,6 +12,8 @@ import {
     PeriodicExportingMetricReader, MeterProvider
 } from '@opentelemetry/sdk-metrics';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+import { Context, Link, SpanAttributes, SpanKind } from '@opentelemetry/api';
+import { Sampler, SamplingDecision, SamplingResult } from "@opentelemetry/sdk-trace-base"
 
 // resource
 const resource = Resource.default().merge(
@@ -46,12 +48,48 @@ meterProvider.addMetricReader(new PeriodicExportingMetricReader({
 const meter = meterProvider.getMeter('meter-info');
 
 // traces
+
+class CustomSampler implements Sampler {
+    shouldSample(
+        context: Context,
+        traceId: string,
+        spanName: string,
+        spanKind: SpanKind,
+        attributes: SpanAttributes,
+        links: Link[]
+    ): SamplingResult {
+
+        if (spanName && spanName.startsWith('fs')) {
+            return {
+                decision: SamplingDecision.NOT_RECORD,
+            };
+        }
+        if (spanName && spanName.startsWith('middleware')) {
+            const sampleProbability = 0.2; // 20% sampling probability
+            const shouldSample = Math.random() < sampleProbability;
+            return {
+                decision: shouldSample
+                    ? SamplingDecision.RECORD_AND_SAMPLED
+                    : SamplingDecision.NOT_RECORD,
+            };
+        }
+        return {
+            decision: SamplingDecision.RECORD_AND_SAMPLED,
+        };
+    }
+
+    toString(): string {
+        return 'CustomSampler';
+    }
+}
+
 const sdk = new NodeSDK({
     resource: resource,
     traceExporter: new OTLPTraceExporter({
         url: `http://otel-collector:4318/v1/traces`,
     }),
     instrumentations: [getNodeAutoInstrumentations()],
+    sampler: new CustomSampler()
 });
 
 sdk.start();

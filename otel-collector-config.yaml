@@ -18,7 +18,7 @@ exporters:
   otlphttp:
     endpoint: https://otel.kloudmate.com:4318
     headers:
-      Authorization: ${KM_WORKSPACE_SECRET}
+      Authorization: ${YOUR_WORKSPACE_SECRET_KEY}
 
 processors:
   batch:

@@ -1,13 +1,21 @@
 version: "3.8"
 
 services:
-  mainapp:
-    build: ./
-    container_name: mainapp
+  client:
+    build: ./client
+    container_name: client
+    ports:
+      - "3006:3006"
+    networks:
+      - nodeapp-network
+
+  server:
+    build: ./server
+    container_name: server
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - ./server/.env
     networks:
       - nodeapp-network
     depends_on:
@@ -20,7 +28,7 @@ services:
     ports:
       - "0.0.0.0:5432:5432"
     env_file:
-      - .env
+      - ./server/.env
     networks:
       - nodeapp-network
     volumes:
@@ -41,7 +49,7 @@ services:
     image: otel/opentelemetry-collector-contrib
     command: [ "--config=/etc/otel-collector-config.yaml" ]
     env_file:
-      - .env
+      - ./server/.env
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:rw
     ports:

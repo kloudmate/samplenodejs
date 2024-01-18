@@ -46,6 +46,18 @@ const startOtelInstrumentation = () => {
           enabled: true,
           propagateTraceHeaderCorsUrls: /.*/,
           clearTimingResources: true,
+          applyCustomAttributesOnSpan: (span, req) => {
+            if (req && req.headers) {
+              span.setAttribute(
+                "http.request.headers",
+                JSON.stringify(req.headers)
+              );
+            }
+            if (req && req.body) {
+              const requestBody = req.body;
+              span.setAttribute("http.request.body", req.body);
+            }
+          },
         },
       }),
     ],

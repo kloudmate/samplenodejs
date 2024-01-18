@@ -107,19 +107,7 @@ const sdk = new NodeSDK({
   instrumentations: [
     getNodeAutoInstrumentations({
       "@opentelemetry/instrumentation-http": {
-        requestHook: (span, req) => {
-          let body = "";
-          req.on("data", (chunk) => {
-            body += chunk;
-          });
-          req.on("end", (chunk) => {
-            try {
-              span.setAttribute("http.request.body", body);
-            } catch (error) {
-              console.log(error);
-            }
-          });
-        },
+
       },
       "@opentelemetry/instrumentation-express": {
         enabled: true,

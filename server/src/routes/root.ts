@@ -1,5 +1,6 @@
 // Logging
 import path from "path";
+import { context, trace } from '@opentelemetry/api';
 import authentication from "../common-lib/helpers/authentication";
 import { addToCache, checkCache } from "../common-lib/helpers/cache";
 import customLogger from "../common-lib/middleware/logger";
@@ -7,6 +8,7 @@ import config from "../config";
 import { countRequestsMiddleware } from "../common-lib/middleware/requestCounter";
 
 const logger = customLogger(path.basename(__filename));
+
 module.exports = async (app) => {
   //:TODO need to secure these apis too.
   const cache = app.get("redisCache");
@@ -49,9 +51,15 @@ module.exports = async (app) => {
       cache.set(key, JSON.stringify(todo), 60);
       logger.info(`New record cached : ${key}`);
       res.status(201).json(todo);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+    } catch (error: any) {
+      const span = trace.getSpan(context.active());
+      span?.setAttribute("http.request.body", JSON.stringify(req.body));
+      span?.addEvent('exception', {
+        'type': error.name,
+        'message': error.message,
+        'stack': error.stack
+      });
+      res.status(500).json({ error: error.message });
     }
   });
 

@@ -1,5 +1,7 @@
 FROM node:alpine
 
+RUN apk add python3 make g++
+
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install 

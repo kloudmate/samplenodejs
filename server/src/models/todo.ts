@@ -9,6 +9,12 @@ module.exports = (app) => {
     },
     description: {
       type: Sequelize.TEXT,
+      validate: {
+        len: {
+          args: [4, 100],
+          msg: "description length must be between 4 and 100 characters"
+        }
+      },
     },
   });
 

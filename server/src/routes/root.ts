@@ -54,11 +54,7 @@ module.exports = async (app) => {
     } catch (error: any) {
       const span = trace.getSpan(context.active());
       span?.setAttribute("http.request.body", JSON.stringify(req.body));
-      span?.addEvent('exception', {
-        'type': error.name,
-        'message': error.message,
-        'stack': error.stack
-      });
+      span?.recordException(error);
       res.status(500).json({ error: error.message });
     }
   });

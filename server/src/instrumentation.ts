@@ -107,7 +107,7 @@ const sdk = new NodeSDK({
   instrumentations: [
     getNodeAutoInstrumentations({
       "@opentelemetry/instrumentation-http": {
-
+        enabled: true,
       },
       "@opentelemetry/instrumentation-express": {
         enabled: true,

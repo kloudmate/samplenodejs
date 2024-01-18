@@ -89,6 +89,16 @@ class CustomSampler implements Sampler {
           : SamplingDecision.NOT_RECORD,
       };
     }
+    if (attributes && attributes["http.method"] == "OPTIONS") {
+      return {
+        decision: SamplingDecision.NOT_RECORD,
+      };
+    }
+    if (attributes && attributes["http.target"] == "/v1/logs") {
+      return {
+        decision: SamplingDecision.NOT_RECORD,
+      };
+    }
     return {
       decision: SamplingDecision.RECORD_AND_SAMPLED,
     };
@@ -108,6 +118,29 @@ const sdk = new NodeSDK({
     getNodeAutoInstrumentations({
       "@opentelemetry/instrumentation-http": {
         enabled: true,
+        requestHook: (span, req) => {
+          let body = "";
+          req.on("data", (chunk) => {
+            body += chunk;
+          });
+          req.on("end", (chunk) => {
+            try {
+              span.setAttribute("http.request.body", body);
+            } catch (error) {
+              console.log(error);
+            }
+          });
+        },
+        responseHook: (span, response) => {
+          let body = "";
+          response.on("data", (chunk) => {
+            body += chunk.toString();
+          });
+          response.on("end", () => {
+            span.setAttribute("http.response.body", body);
+            response.removeAllListeners();
+          });
+        },
       },
       "@opentelemetry/instrumentation-express": {
         enabled: true,

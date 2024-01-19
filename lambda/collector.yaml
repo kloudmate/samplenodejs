@@ -1,0 +1,31 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:4317
+      http:
+        endpoint: localhost:4318
+
+exporters:
+  otlphttp/km:
+    endpoint: https://otel.kloudmate.dev:4318
+    headers:
+      Authorization: ${env:KM_WORKSPACE_SECRET}
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlphttp/km]
+    logs:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlphttp/km]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlphttp/km]
+  telemetry:
+    logs:
+      level: "debug"

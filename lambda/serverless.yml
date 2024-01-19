@@ -1,0 +1,22 @@
+service: otel-lambda-node
+frameworkVersion: "3"
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  run:
+    handler: index.run
+    layers:
+      - arn:aws:lambda:${aws:region}:184161586896:layer:opentelemetry-collector-amd64-0_3_1:1
+      - arn:aws:lambda:${aws:region}:184161586896:layer:opentelemetry-nodejs-0_3_0:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-handler
+      OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/collector.yaml
+      KM_WORKSPACE_SECRET: ${env:KM_WORKSPACE_SECRET}
+      OTEL_TRACES_SAMPLER: always_on
+      OTEL_LAMBDA_DISABLE_AWS_CONTEXT_PROPAGATION: true
+

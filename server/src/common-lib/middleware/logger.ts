@@ -1,35 +1,38 @@
-'use strict'
-import config from '../../config'
-const winston = require('winston')
-const { createLogger, format, transports } = winston
-import { SeverityNumber } from '@opentelemetry/api-logs'
-import { loggerProvider } from '../../instrumentation'
-const moment = require('moment-timezone')
+"use strict";
+import config from "../../config";
+const winston = require("winston");
+const { createLogger, format, transports } = winston;
+import { SeverityNumber } from "@opentelemetry/api-logs";
+// import { loggerProvider } from '../../instrumentation'
+const moment = require("moment-timezone");
 
-const { combine, label, printf } = format
+const { combine, label, printf } = format;
 
-const myFormat = printf(info => {
-	const message: string = typeof info.message === 'string' ? info.message : JSON.stringify(info.message);
-	// const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${message}`
-	const formatedMessage: string = message;
+const myFormat = printf((info) => {
+  const message: string =
+    typeof info.message === "string"
+      ? info.message
+      : JSON.stringify(info.message);
+  // const formatedMessage: string = `${info.timestamp} [${info.level}]: ${info.label} - ${message}`
+  const formatedMessage: string = message;
 
-	if (info.level === 'info') {
-		loggerProvider
-			.getLogger('otel-logger')
-			.emit({ body: formatedMessage, severityNumber: SeverityNumber.INFO })
-	}
-	else if (info.level === 'error') {
-		loggerProvider
-			.getLogger('otel-logger')
-			.emit({ body: formatedMessage, severityNumber: SeverityNumber.ERROR })
-	}
-	else {
-		loggerProvider
-			.getLogger('otel-logger')
-			.emit({ body: formatedMessage, severityNumber: SeverityNumber.WARN })
-	}
-	return formatedMessage;
-})
+  // if (info.level === 'info') {
+  // 	loggerProvider
+  // 		.getLogger('otel-logger')
+  // 		.emit({ body: formatedMessage, severityNumber: SeverityNumber.INFO })
+  // }
+  // else if (info.level === 'error') {
+  // 	loggerProvider
+  // 		.getLogger('otel-logger')
+  // 		.emit({ body: formatedMessage, severityNumber: SeverityNumber.ERROR })
+  // }
+  // else {
+  // 	loggerProvider
+  // 		.getLogger('otel-logger')
+  // 		.emit({ body: formatedMessage, severityNumber: SeverityNumber.WARN })
+  // }
+  return formatedMessage;
+});
 
 // appends timestamp
 // const appendTimestamp = format((info, opts) => {
@@ -37,30 +40,30 @@ const myFormat = printf(info => {
 // 	return info
 // })
 
-const customLogger = module => {
-	const logger = createLogger({
-		//TODO: Need to read the level from config
-		level: config.logger.level || 'info',
-		// colorize: true,
+const customLogger = (module) => {
+  const logger = createLogger({
+    //TODO: Need to read the level from config
+    level: config.logger.level || "info",
+    // colorize: true,
 
-		// Commented out formatting line to resolve Kloudmate issue: Parsing the message object as a string.
+    // Commented out formatting line to resolve Kloudmate issue: Parsing the message object as a string.
 
-		// format: combine(label({ label: module }), appendTimestamp({ tz: 'Asia/Kolkata' }), myFormat),
-		format: myFormat,
-		transports: [new transports.Console()],
-	})
-	logger.stream = {
-		// @ts-ignore
-		write: function (message, encoding) {
-			// use the 'info' log level so the output will be picked up by both transports (file and console)
-			logger.info(message)
-		},
-	}
+    // format: combine(label({ label: module }), appendTimestamp({ tz: 'Asia/Kolkata' }), myFormat),
+    format: myFormat,
+    transports: [new transports.Console()],
+  });
+  logger.stream = {
+    // @ts-ignore
+    write: function (message, encoding) {
+      // use the 'info' log level so the output will be picked up by both transports (file and console)
+      logger.info(message);
+    },
+  };
 
-	return logger
-}
+  return logger;
+};
 
 // create a stream object with a 'write' function that will be used by `morgan`
 
 // module.exports = customLogger
-export default customLogger
+export default customLogger;

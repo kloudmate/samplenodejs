@@ -44,19 +44,15 @@ services:
       - nodeapp-network
     stop_grace_period: 1s
 
-  otel-collector:
-    container_name: otel-collector
-    image: otel/opentelemetry-collector-contrib
-    command: [ "--config=/etc/otel-collector-config.yaml" ]
+  autoinstrumenter:
+    image: grafana/beyla:latest
+    pid: "service:server"
+    privileged: true
+    command: ["beyla", "--config=/etc/config.yml" ]
+    volumes:
+      - ./config.yml:/etc/config.yml:rw
     env_file:
       - ./server/.env
-    volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:rw
-    ports:
-      - 0.0.0.0:1888:1888 # pprof extension
-      - 0.0.0.0:13133:13133 # health_check extension
-      - 0.0.0.0:4318:4318 # OTLP http receiver
-      - 0.0.0.0:55679:55679 # zpages extension
     networks:
       - nodeapp-network
 

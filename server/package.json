@@ -32,7 +32,7 @@
 	},
 	"scripts": {
 		"build": "tsc --build",
-		"start": "tsc-watch   --onSuccess \"nodemon  --require ./dist/instrumentation.js  dist/app.js \"",
+		"start": "tsc-watch   --onSuccess \"nodemon  dist/app.js \"",
 		"debug": "tsc-watch --onSuccess \"nodemon  --inspect=9230   --ignore dist/ dist/app.js\"",
 		"debug-brk": "tsc-watch --onSuccess \"nodemon  --inspect-brk    dist/app.js\""
 	},

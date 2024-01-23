@@ -1,6 +1,6 @@
-# Sample Node.js Application with OpenTelemetry Configuration
+# Sample Node.js Application with Beyla Configuration
 
-This repository contains a simple Node.js application that demonstrates how to configure OpenTelemetry to monitor both application and infrastructure. The application includes Docker Compose configurations for easy deployment.
+This repository contains a simple Node.js application that demonstrates how to configure Beyla to monitor both application and infrastructure. The application includes Docker Compose configurations for easy deployment.
 
 ## Prerequisites
 
@@ -23,20 +23,26 @@ Before you begin, ensure you have the following installed:
    cd samplenodejs
    ```
 
-3. Create a `.env` file in the root directory. You can refer to the provided `env.example` for the required environment variables.
+3. Go to _feature/ebpf_
 
-4. Run the application using Docker Compose:
+   ```bash
+   git cheakout feature/ebpf
+   ```
+
+4. Create a `.env` file in the root directory. You can refer to the provided `env.example` for the required environment variables.
+
+5. Run the application using Docker Compose:
 
    ```bash
    docker-compose up -d
    ```
 
-This will start the main application along with a PostgreSQL database, Redis, and the OpenTelemetry collector.
+This will start the main application along with a PostgreSQL database, Redis, and the Beyla.
 
-5. Visit `http://localhost:3006`
+6. Visit `http://localhost:3006`
 
-## OpenTelemetry Configuration
+## Beyla Configuration
 
-The application is instrumented using OpenTelemetry to collect traces, logs, and metrics. The configuration can be found in the `server/src/instrumentation.js` file and `client/src/tracing.js`.
+The application is instrumented using Beyla to collect traces, logs, and metrics. The configuration can be found in the `server/.env`.
 
-Feel free to explore the code and modify the OpenTelemetry configuration as needed for your specific requirements.
+Feel free to explore the code and modify the Beyla configuration as needed for your specific requirements.

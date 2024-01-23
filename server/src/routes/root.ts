@@ -1,11 +1,10 @@
 // Logging
 import path from "path";
-import { context, trace } from '@opentelemetry/api';
+import { context, trace } from "@opentelemetry/api";
 import authentication from "../common-lib/helpers/authentication";
 import { addToCache, checkCache } from "../common-lib/helpers/cache";
 import customLogger from "../common-lib/middleware/logger";
 import config from "../config";
-import { countRequestsMiddleware } from "../common-lib/middleware/requestCounter";
 
 const logger = customLogger(path.basename(__filename));
 
@@ -28,7 +27,6 @@ module.exports = async (app) => {
     // }
   });
   app.use(checkCache);
-  app.use(countRequestsMiddleware);
 
   app.get("/", (req, res, next) => {
     try {

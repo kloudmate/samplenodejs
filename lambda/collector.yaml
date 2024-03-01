@@ -8,7 +8,7 @@ receivers:
 
 exporters:
   otlphttp/km:
-    endpoint: https://otel.kloudmate.dev:4318
+    endpoint: https://otel.kloudmate.com:4318
     headers:
       Authorization: ${env:KM_WORKSPACE_SECRET}
 

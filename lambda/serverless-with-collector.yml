@@ -13,5 +13,6 @@ functions:
   run:
     handler: index.run
     layers:
+      - arn:aws:lambda:${aws:region}:184161586896:layer:opentelemetry-collector-amd64-0_4_0:1
       - arn:aws:lambda:${aws:region}:184161586896:layer:opentelemetry-nodejs-0_4_0:1
 
